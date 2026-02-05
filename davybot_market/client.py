@@ -1,5 +1,6 @@
 """DavyBot Market SDK Client."""
 import os
+import urllib.parse
 import httpx
 from typing import Any, BinaryIO, Dict, List, Optional, Union, IO
 from pathlib import Path
@@ -31,6 +32,17 @@ class DavybotMarketClient:
             # Download resource
             client.download("skill", "abc123", "./downloads")
     """
+
+    def _encode_resource_id(self, resource_id: str) -> str:
+        """URL-encode resource ID to handle slashes and special characters.
+
+        Args:
+            resource_id: Resource ID that may contain slashes
+
+        Returns:
+            URL-encoded resource ID
+        """
+        return urllib.parse.quote(resource_id, safe='')
 
     def __init__(
         self,
@@ -206,6 +218,14 @@ class DavybotMarketClient:
         self._handle_error(response)
         return response.json()
 
+    def _get_resource(self, resource_type: str, resource_id: str) -> Dict[str, Any]:
+        """Internal method to get resource by type."""
+        client = self._get_client()
+        encoded_id = self._encode_resource_id(resource_id)
+        response = client.get(f"/{resource_type}s/{encoded_id}")
+        self._handle_error(response)
+        return response.json()
+
     # Get resource details
     def get_skill(self, resource_id: str) -> Dict[str, Any]:
         """Get skill details.
@@ -254,7 +274,8 @@ class DavybotMarketClient:
     def _get_resource(self, resource_type: str, resource_id: str) -> Dict[str, Any]:
         """Internal method to get resource by type."""
         client = self._get_client()
-        response = client.get(f"/{resource_type}s/{resource_id}")
+        encoded_id = self._encode_resource_id(resource_id)
+        response = client.get(f"/{resource_type}s/{encoded_id}")
         self._handle_error(response)
         return response.json()
 
@@ -407,8 +428,9 @@ class DavybotMarketClient:
         if version:
             params["version"] = version
 
+        encoded_id = self._encode_resource_id(resource_id)
         response = client.get(
-            f"/{resource_type}s/{resource_id}/download",
+            f"/{resource_type}s/{encoded_id}/download",
             params=params,
             follow_redirects=True,
         )
@@ -451,7 +473,8 @@ class DavybotMarketClient:
         if comment:
             payload["comment"] = comment
 
-        response = client.post(f"/resources/{resource_id}/ratings", json=payload)
+        encoded_id = self._encode_resource_id(resource_id)
+        response = client.post(f"/resources/{encoded_id}/ratings", json=payload)
         self._handle_error(response)
         return response.json()
 
@@ -467,7 +490,8 @@ class DavybotMarketClient:
             List of ratings
         """
         client = self._get_client()
-        response = client.get(f"/resources/{resource_id}/ratings", params={"skip": skip, "limit": limit})
+        encoded_id = self._encode_resource_id(resource_id)
+        response = client.get(f"/resources/{encoded_id}/ratings", params={"skip": skip, "limit": limit})
         self._handle_error(response)
         return response.json()
 
@@ -481,7 +505,8 @@ class DavybotMarketClient:
             Average rating info
         """
         client = self._get_client()
-        response = client.get(f"/resources/{resource_id}/ratings/avg")
+        encoded_id = self._encode_resource_id(resource_id)
+        response = client.get(f"/resources/{encoded_id}/ratings/avg")
         self._handle_error(response)
         return response.json()
 
@@ -497,7 +522,8 @@ class DavybotMarketClient:
             Similar resources
         """
         client = self._get_client()
-        response = client.get(f"/search/similar/{resource_id}", params={"limit": limit})
+        encoded_id = self._encode_resource_id(resource_id)
+        response = client.get(f"/search/similar/{encoded_id}", params={"limit": limit})
         self._handle_error(response)
         return response.json()
 
@@ -535,7 +561,8 @@ class DavybotMarketClient:
         if metadata is not None:
             payload["metadata"] = metadata
 
-        response = client.put(f"/{resource_type}s/{resource_id}", json=payload)
+        encoded_id = self._encode_resource_id(resource_id)
+        response = client.put(f"/{resource_type}s/{encoded_id}", json=payload)
         self._handle_error(response)
         return response.json()
 
@@ -547,7 +574,8 @@ class DavybotMarketClient:
             resource_id: Resource ID
         """
         client = self._get_client()
-        response = client.delete(f"/{resource_type}s/{resource_id}")
+        encoded_id = self._encode_resource_id(resource_id)
+        response = client.delete(f"/{resource_type}s/{encoded_id}")
         self._handle_error(response)
 
     # Compatibility aliases for CLI
