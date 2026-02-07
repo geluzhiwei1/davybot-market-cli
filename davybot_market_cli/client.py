@@ -2,7 +2,7 @@
 import os
 import urllib.parse
 import httpx
-from typing import Any, BinaryIO, Dict, List, Optional, Union, IO
+from typing import Any
 from pathlib import Path
 
 from .exceptions import (
@@ -46,8 +46,8 @@ class DavybotMarketClient:
 
     def __init__(
         self,
-        base_url: Optional[str] = None,
-        api_key: Optional[str] = None,
+        base_url: str | None = None,
+        api_key: str | None = None,
         timeout: float = 30.0,
         verify_ssl: bool = True,
     ):
@@ -63,8 +63,8 @@ class DavybotMarketClient:
         self.api_key = api_key or os.environ.get("DAVYBOT_API_KEY")
         self.timeout = timeout
         self.verify_ssl = verify_ssl
-        self._client: Optional[httpx.Client] = None
-        self._async_client: Optional[httpx.AsyncClient] = None
+        self._client: httpx.Client | None = None
+        self._async_client: httpx.AsyncClient | None = None
 
     def __enter__(self):
         """Enter context manager."""
@@ -108,7 +108,7 @@ class DavybotMarketClient:
             raise RuntimeError("Async client not initialized. Use 'async with DavybotMarketClient() as client:'")
         return self._async_client
 
-    def _get_headers(self) -> Dict[str, str]:
+    def _get_headers(self) -> dict[str, str]:
         """Get request headers."""
         headers = {
             "Content-Type": "application/json",
@@ -118,7 +118,7 @@ class DavybotMarketClient:
         return headers
 
     # Health check
-    def health(self) -> Dict[str, Any]:
+    def health(self) -> dict[str, Any]:
         """Check API health.
 
         Returns:
@@ -134,11 +134,11 @@ class DavybotMarketClient:
     def search(
         self,
         query: str,
-        resource_type: Optional[str] = None,
-        tags: Optional[List[str]] = None,
+        resource_type: str | None = None,
+        tags: list[str] | None = None,
         limit: int = 20,
         offset: int = 0,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Search for resources.
 
         Args:
@@ -163,7 +163,7 @@ class DavybotMarketClient:
         return response.json()
 
     # List resources
-    def list_skills(self, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
+    def list_skills(self, skip: int = 0, limit: int = 100) -> dict[str, Any]:
         """List all skills.
 
         Args:
@@ -175,7 +175,7 @@ class DavybotMarketClient:
         """
         return self._list_resources("skill", skip, limit)
 
-    def list_agents(self, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
+    def list_agents(self, skip: int = 0, limit: int = 100) -> dict[str, Any]:
         """List all agents.
 
         Args:
@@ -187,7 +187,7 @@ class DavybotMarketClient:
         """
         return self._list_resources("agent", skip, limit)
 
-    def list_mcp_servers(self, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
+    def list_mcp_servers(self, skip: int = 0, limit: int = 100) -> dict[str, Any]:
         """List all MCP servers.
 
         Args:
@@ -199,7 +199,7 @@ class DavybotMarketClient:
         """
         return self._list_resources("mcp", skip, limit)
 
-    def list_knowledge_bases(self, skip: int = 0, limit: int = 100) -> Dict[str, Any]:
+    def list_knowledge_bases(self, skip: int = 0, limit: int = 100) -> dict[str, Any]:
         """List all knowledge bases.
 
         Args:
@@ -211,14 +211,14 @@ class DavybotMarketClient:
         """
         return self._list_resources("knowledge", skip, limit)
 
-    def _list_resources(self, resource_type: str, skip: int, limit: int) -> Dict[str, Any]:
+    def _list_resources(self, resource_type: str, skip: int, limit: int) -> dict[str, Any]:
         """Internal method to list resources by type."""
         client = self._get_client()
         response = client.get(f"/{resource_type}s", params={"skip": skip, "limit": limit})
         self._handle_error(response)
         return response.json()
 
-    def _get_resource(self, resource_type: str, resource_id: str) -> Dict[str, Any]:
+    def _get_resource(self, resource_type: str, resource_id: str) -> dict[str, Any]:
         """Internal method to get resource by type."""
         client = self._get_client()
         encoded_id = self._encode_resource_id(resource_id)
@@ -227,7 +227,7 @@ class DavybotMarketClient:
         return response.json()
 
     # Get resource details
-    def get_skill(self, resource_id: str) -> Dict[str, Any]:
+    def get_skill(self, resource_id: str) -> dict[str, Any]:
         """Get skill details.
 
         Args:
@@ -238,7 +238,7 @@ class DavybotMarketClient:
         """
         return self._get_resource("skill", resource_id)
 
-    def get_agent(self, resource_id: str) -> Dict[str, Any]:
+    def get_agent(self, resource_id: str) -> dict[str, Any]:
         """Get agent details.
 
         Args:
@@ -249,7 +249,7 @@ class DavybotMarketClient:
         """
         return self._get_resource("agent", resource_id)
 
-    def get_mcp_server(self, resource_id: str) -> Dict[str, Any]:
+    def get_mcp_server(self, resource_id: str) -> dict[str, Any]:
         """Get MCP server details.
 
         Args:
@@ -260,7 +260,7 @@ class DavybotMarketClient:
         """
         return self._get_resource("mcp", resource_id)
 
-    def get_knowledge_base(self, resource_id: str) -> Dict[str, Any]:
+    def get_knowledge_base(self, resource_id: str) -> dict[str, Any]:
         """Get knowledge base details.
 
         Args:
@@ -271,24 +271,16 @@ class DavybotMarketClient:
         """
         return self._get_resource("knowledge", resource_id)
 
-    def _get_resource(self, resource_type: str, resource_id: str) -> Dict[str, Any]:
-        """Internal method to get resource by type."""
-        client = self._get_client()
-        encoded_id = self._encode_resource_id(resource_id)
-        response = client.get(f"/{resource_type}s/{encoded_id}")
-        self._handle_error(response)
-        return response.json()
-
     # Create resources
     def create_skill(
         self,
         name: str,
-        files: Dict[str, str],
-        description: Optional[str] = None,
-        author: Optional[str] = None,
-        tags: Optional[List[str]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        files: dict[str, str],
+        description: str | None = None,
+        author: str | None = None,
+        tags: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Create a new skill.
 
         Args:
@@ -307,12 +299,12 @@ class DavybotMarketClient:
     def create_agent(
         self,
         name: str,
-        files: Dict[str, str],
-        description: Optional[str] = None,
-        author: Optional[str] = None,
-        tags: Optional[List[str]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        files: dict[str, str],
+        description: str | None = None,
+        author: str | None = None,
+        tags: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Create a new agent.
 
         Args:
@@ -331,12 +323,12 @@ class DavybotMarketClient:
     def create_mcp_server(
         self,
         name: str,
-        files: Dict[str, str],
-        description: Optional[str] = None,
-        author: Optional[str] = None,
-        tags: Optional[List[str]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        files: dict[str, str],
+        description: str | None = None,
+        author: str | None = None,
+        tags: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Create a new MCP server.
 
         Args:
@@ -355,12 +347,12 @@ class DavybotMarketClient:
     def create_knowledge_base(
         self,
         name: str,
-        files: Dict[str, str],
-        description: Optional[str] = None,
-        author: Optional[str] = None,
-        tags: Optional[List[str]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        files: dict[str, str],
+        description: str | None = None,
+        author: str | None = None,
+        tags: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Create a new knowledge base.
 
         Args:
@@ -380,12 +372,12 @@ class DavybotMarketClient:
         self,
         resource_type: str,
         name: str,
-        files: Dict[str, str],
-        description: Optional[str] = None,
-        author: Optional[str] = None,
-        tags: Optional[List[str]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        files: dict[str, str],
+        description: str | None = None,
+        author: str | None = None,
+        tags: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Internal method to create resource."""
         client = self._get_client()
         payload = {"name": name, "files": files}
@@ -407,9 +399,9 @@ class DavybotMarketClient:
         self,
         resource_type: str,
         resource_id: str,
-        output_path: Union[str, Path],
+        output_path: str | Path,
         format: str = "zip",
-        version: Optional[str] = None,
+        version: str | None = None,
     ) -> Path:
         """Download a resource.
 
@@ -456,8 +448,8 @@ class DavybotMarketClient:
         self,
         resource_id: str,
         score: int,
-        comment: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        comment: str | None = None,
+    ) -> dict[str, Any]:
         """Rate a resource.
 
         Args:
@@ -478,7 +470,7 @@ class DavybotMarketClient:
         self._handle_error(response)
         return response.json()
 
-    def get_resource_ratings(self, resource_id: str, skip: int = 0, limit: int = 50) -> List[Dict[str, Any]]:
+    def get_resource_ratings(self, resource_id: str, skip: int = 0, limit: int = 50) -> list[dict[str, Any]]:
         """Get ratings for a resource.
 
         Args:
@@ -495,7 +487,7 @@ class DavybotMarketClient:
         self._handle_error(response)
         return response.json()
 
-    def get_average_rating(self, resource_id: str) -> Dict[str, Any]:
+    def get_average_rating(self, resource_id: str) -> dict[str, Any]:
         """Get average rating for a resource.
 
         Args:
@@ -511,7 +503,7 @@ class DavybotMarketClient:
         return response.json()
 
     # Similar resources
-    def find_similar(self, resource_id: str, limit: int = 10) -> Dict[str, Any]:
+    def find_similar(self, resource_id: str, limit: int = 10) -> dict[str, Any]:
         """Find similar resources.
 
         Args:
@@ -532,11 +524,11 @@ class DavybotMarketClient:
         self,
         resource_type: str,
         resource_id: str,
-        name: Optional[str] = None,
-        description: Optional[str] = None,
-        tags: Optional[List[str]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        name: str | None = None,
+        description: str | None = None,
+        tags: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Update a resource.
 
         Args:
@@ -579,7 +571,7 @@ class DavybotMarketClient:
         self._handle_error(response)
 
     # Compatibility aliases for CLI
-    def get_resource(self, resource_type: str, resource_id: str) -> Dict[str, Any]:
+    def get_resource(self, resource_type: str, resource_id: str) -> dict[str, Any]:
         """Get a specific resource (alias for backward compatibility)."""
         return self._get_resource(resource_type, resource_id)
 
@@ -587,12 +579,12 @@ class DavybotMarketClient:
         self,
         resource_type: str,
         name: str,
-        files: Dict[str, str],
-        description: Optional[str] = None,
-        author: Optional[str] = None,
-        tags: Optional[List[str]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        files: dict[str, str],
+        description: str | None = None,
+        author: str | None = None,
+        tags: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Create/publish a new resource (alias for backward compatibility)."""
         return self._create_resource(resource_type, name, files, description, author, tags, metadata)
 
@@ -601,13 +593,13 @@ class DavybotMarketClient:
         resource_type: str,
         resource_id: str,
         format: str = "zip",
-        version: Optional[str] = None,
+        version: str | None = None,
         output_dir: Path = Path("."),
     ) -> Path:
         """Download a resource (alias for backward compatibility)."""
         return self.download(resource_type, resource_id, output_dir, format, version)
 
-    def get_similar(self, resource_id: str, limit: int = 10) -> Dict[str, Any]:
+    def get_similar(self, resource_id: str, limit: int = 10) -> dict[str, Any]:
         """Find similar resources (alias for backward compatibility)."""
         return self.find_similar(resource_id, limit)
 

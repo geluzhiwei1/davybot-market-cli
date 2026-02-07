@@ -5,7 +5,7 @@ Unified CLI and Python SDK for DavyBot Market - AI Agent Resources.
 ## Installation
 
 ```bash
-pip install davybot-market
+pip install davybot-market-cli
 ```
 
 Or install from source:
@@ -86,7 +86,7 @@ davy health
 ### Basic Usage
 
 ```python
-from davybot_market import DavybotMarketClient
+from davybot_market_cli import DavybotMarketClient
 
 # Initialize client
 with DavybotMarketClient() as client:
@@ -115,7 +115,7 @@ with DavybotMarketClient() as client:
 
 ```python
 import asyncio
-from davybot_market import DavybotMarketClient
+from davybot_market_cli import DavybotMarketClient
 
 async def main():
     async with DavybotMarketClient() as client:
@@ -244,7 +244,7 @@ davy publish skill . --name "my-skill" --description "My awesome skill"
 ### Python SDK Integration
 
 ```python
-from davybot_market import DavybotMarketClient
+from davybot_market_cli import DavybotMarketClient
 
 # Integrate into your application
 def find_and_download_skill(query: str, output_dir: str):
@@ -266,7 +266,7 @@ def find_and_download_skill(query: str, output_dir: str):
 ## Error Handling
 
 ```python
-from davybot_market import (
+from davybot_market_cli import (
     DavybotMarketClient,
     AuthenticationError,
     NotFoundError,

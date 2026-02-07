@@ -1,22 +1,23 @@
 [project]
-name = "davybot-market"
+name = "davybot-market-cli"
 version = "0.1.0"
 description = "CLI and SDK for DavyBot Market - AI Agent Resources"
 authors = [
     {name = "DavyBot Market Team"}
 ]
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "click>=8.1.7",
     "httpx>=0.25.1",
     "rich>=13.6.0",
     "questionary>=2.0.1",
+    "pydantic>=2.0.0",
 ]
 
 [project.scripts]
-davy = "davybot_market.cli:cli"
-dawei = "davybot_market.cli:cli"
+davy = "davybot_market_cli.cli:cli"
+dawei = "davybot_market_cli.cli:cli"
 
 [project.optional-dependencies]
 dev = [
@@ -32,18 +33,18 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["davybot_market"]
+packages = ["davybot_market_cli"]
 
 [tool.black]
 line-length = 100
-target-version = ['py311']
+target-version = ['py312']
 
 [tool.ruff]
 line-length = 100
-target-version = "py311"
+target-version = "py312"
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.12"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true

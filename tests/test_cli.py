@@ -1,7 +1,7 @@
 """Tests for CLI commands."""
 import pytest
 from click.testing import CliRunner
-from davybot_market.cli import cli
+from davybot_market_cli.cli import cli
 
 
 @pytest.fixture

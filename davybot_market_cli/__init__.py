@@ -29,6 +29,25 @@ from .exceptions import (
     DownloadError,
 )
 
+# Shared Types
+from .types import (
+    # Analytics
+    AnalyticsEvent,
+    SystemMetrics,
+    AnalyticsSettings,
+    AnalyticsSummary,
+    # Feedback
+    FeedbackType,
+    FeedbackStatus,
+    Feedback,
+    FeedbackResponse,
+    FeedbackListResponse,
+    # Sync
+    SyncConfiguration,
+    SyncStatus,
+    SyncConflict,
+)
+
 __all__ = [
     # SDK Client
     "DavybotMarketClient",
@@ -51,4 +70,19 @@ __all__ = [
     "APIError",
     "ConnectionError",
     "DownloadError",
+    # Shared Types - Analytics
+    "AnalyticsEvent",
+    "SystemMetrics",
+    "AnalyticsSettings",
+    "AnalyticsSummary",
+    # Shared Types - Feedback
+    "FeedbackType",
+    "FeedbackStatus",
+    "Feedback",
+    "FeedbackResponse",
+    "FeedbackListResponse",
+    # Shared Types - Sync
+    "SyncConfiguration",
+    "SyncStatus",
+    "SyncConflict",
 ]
