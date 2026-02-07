@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/davybot-market
+      url: https://pypi.org/p/davybot-market-cli
 
     steps:
       - name: Download all the dists
@@ -62,7 +62,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/davybot-market
+      url: https://test.pypi.org/p/davybot-market-cli
 
     steps:
       - name: Download all the dists
