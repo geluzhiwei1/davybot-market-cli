@@ -1,4 +1,5 @@
 """Data models for DavyBot Market SDK."""
+
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path

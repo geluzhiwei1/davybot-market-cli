@@ -2,6 +2,7 @@
 Shared Type Definitions for Feedback
 Feedback 相关的共享类型定义
 """
+
 from pydantic import BaseModel, Field, ConfigDict
 from enum import Enum
 

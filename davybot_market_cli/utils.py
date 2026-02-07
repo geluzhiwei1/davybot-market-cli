@@ -1,4 +1,5 @@
 """Utility functions for CLI."""
+
 import os
 from typing import Tuple, Optional
 from .client import DavybotMarketClient

@@ -1,4 +1,5 @@
 """Info command for CLI."""
+
 import click
 import httpx
 from ..utils import get_api_client, format_resource, parse_resource_uri
@@ -7,7 +8,9 @@ from ..exceptions import NotFoundError, ValidationError, APIError, DavybotMarket
 
 @click.command()
 @click.argument("resource_uri")
-@click.option("--output", "-o", type=click.Choice(["table", "json"]), default="table", help="Output format")
+@click.option(
+    "--output", "-o", type=click.Choice(["table", "json"]), default="table", help="Output format"
+)
 @click.option("--similar", "-s", is_flag=True, help="Show similar resources")
 def info(resource_uri: str, output: str, similar: bool):
     """Show detailed information about a resource.
@@ -39,7 +42,9 @@ def info(resource_uri: str, output: str, similar: bool):
                     resource_type = resource["type"]
                     resource_id = resource["id"]
                 else:
-                    click.echo(click.style(f"Resource '{resource_id}' not found.", fg="red"), err=True)
+                    click.echo(
+                        click.style(f"Resource '{resource_id}' not found.", fg="red"), err=True
+                    )
                     raise click.Abort()
             except httpx.HTTPError as e:
                 click.echo(click.style(f"Error: {e}", fg="red"), err=True)
@@ -51,6 +56,7 @@ def info(resource_uri: str, output: str, similar: bool):
 
             if output == "json":
                 import json
+
                 click.echo(json.dumps(resource, indent=2))
             else:
                 # Display formatted info
@@ -76,6 +82,7 @@ def info(resource_uri: str, output: str, similar: bool):
                 if resource.get("extra_metadata"):
                     click.echo(click.style("Metadata:", bold=True))
                     import json as json_mod
+
                     click.echo(json_mod.dumps(resource["extra_metadata"], indent=2))
                     click.echo()
 
@@ -94,7 +101,9 @@ def info(resource_uri: str, output: str, similar: bool):
 
                         if similar_resources:
                             for i, sim in enumerate(similar_resources, 1):
-                                click.echo(f"{i}. {sim['name']} ({sim['type']}) - {sim['rating']:.1f}★")
+                                click.echo(
+                                    f"{i}. {sim['name']} ({sim['type']}) - {sim['rating']:.1f}★"
+                                )
                         else:
                             click.echo("  No similar resources found.")
                     except httpx.HTTPError:

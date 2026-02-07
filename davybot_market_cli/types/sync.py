@@ -2,6 +2,7 @@
 Shared Type Definitions for Sync
 Sync 相关的共享类型定义
 """
+
 from pydantic import BaseModel, Field, ConfigDict
 from typing import Any
 from datetime import datetime, timezone

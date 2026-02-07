@@ -1,4 +1,5 @@
 """DavyBot Market CLI entry point."""
+
 import click
 import sys
 import httpx
@@ -14,7 +15,9 @@ from .exit_codes import (
 
 @click.group(invoke_without_command=True)
 @click.pass_context
-@click.option("--api-url", envvar="DAVYBOT_API_URL", help="API URL (default: http://localhost:8000/api/v1)")
+@click.option(
+    "--api-url", envvar="DAVYBOT_API_URL", help="API URL (default: http://localhost:8000/api/v1)"
+)
 @click.version_option(version="0.1.0", prog_name="davy")
 def cli(ctx: click.Context, api_url: str):
     """DavyBot Market - AI Agent Resources CLI.
@@ -53,7 +56,9 @@ def health():
     """Check API health status."""
     import os
 
-    api_url = os.environ.get("DAVYBOT_API_URL", "http://localhost:8000/api/v1").replace("/api/v1", "")
+    api_url = os.environ.get("DAVYBOT_API_URL", "http://localhost:8000/api/v1").replace(
+        "/api/v1", ""
+    )
     try:
         response = httpx.get(f"{api_url}/health", timeout=5)
         response.raise_for_status()
@@ -68,7 +73,11 @@ def health():
         click.echo(click.style("[ERROR] Cannot connect to API", fg="red", bold=True))
         raise ExitCodeError(ERROR_NETWORK, "Connection failed")
     except httpx.HTTPStatusError as e:
-        click.echo(click.style(f"[ERROR] API returned error: {e.response.status_code}", fg="red", bold=True))
+        click.echo(
+            click.style(
+                f"[ERROR] API returned error: {e.response.status_code}", fg="red", bold=True
+            )
+        )
         raise ExitCodeError(ERROR_API_UNHEALTHY, f"API returned {e.response.status_code}")
     except Exception as e:
         click.echo(click.style(f"[ERROR] API is unhealthy: {e}", fg="red", bold=True))

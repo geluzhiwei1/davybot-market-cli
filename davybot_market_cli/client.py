@@ -1,4 +1,5 @@
 """DavyBot Market SDK Client."""
+
 import os
 import urllib.parse
 import httpx
@@ -42,7 +43,7 @@ class DavybotMarketClient:
         Returns:
             URL-encoded resource ID
         """
-        return urllib.parse.quote(resource_id, safe='')
+        return urllib.parse.quote(resource_id, safe="")
 
     def __init__(
         self,
@@ -59,7 +60,9 @@ class DavybotMarketClient:
             timeout: Request timeout in seconds
             verify_ssl: Whether to verify SSL certificates
         """
-        self.base_url = (base_url or os.environ.get("DAVYBOT_API_URL", "http://localhost:8000/api/v1")).rstrip("/")
+        self.base_url = (
+            base_url or os.environ.get("DAVYBOT_API_URL", "http://localhost:8000/api/v1")
+        ).rstrip("/")
         self.api_key = api_key or os.environ.get("DAVYBOT_API_KEY")
         self.timeout = timeout
         self.verify_ssl = verify_ssl
@@ -99,13 +102,17 @@ class DavybotMarketClient:
     def _get_client(self) -> httpx.Client:
         """Get or create sync client."""
         if not self._client:
-            raise RuntimeError("Client not initialized. Use 'with DavybotMarketClient() as client:'")
+            raise RuntimeError(
+                "Client not initialized. Use 'with DavybotMarketClient() as client:'"
+            )
         return self._client
 
     async def _get_async_client(self) -> httpx.AsyncClient:
         """Get or create async client."""
         if not self._async_client:
-            raise RuntimeError("Async client not initialized. Use 'async with DavybotMarketClient() as client:'")
+            raise RuntimeError(
+                "Async client not initialized. Use 'async with DavybotMarketClient() as client:'"
+            )
         return self._async_client
 
     def _get_headers(self) -> dict[str, str]:
@@ -470,7 +477,9 @@ class DavybotMarketClient:
         self._handle_error(response)
         return response.json()
 
-    def get_resource_ratings(self, resource_id: str, skip: int = 0, limit: int = 50) -> list[dict[str, Any]]:
+    def get_resource_ratings(
+        self, resource_id: str, skip: int = 0, limit: int = 50
+    ) -> list[dict[str, Any]]:
         """Get ratings for a resource.
 
         Args:
@@ -483,7 +492,9 @@ class DavybotMarketClient:
         """
         client = self._get_client()
         encoded_id = self._encode_resource_id(resource_id)
-        response = client.get(f"/resources/{encoded_id}/ratings", params={"skip": skip, "limit": limit})
+        response = client.get(
+            f"/resources/{encoded_id}/ratings", params={"skip": skip, "limit": limit}
+        )
         self._handle_error(response)
         return response.json()
 
@@ -586,7 +597,9 @@ class DavybotMarketClient:
         metadata: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Create/publish a new resource (alias for backward compatibility)."""
-        return self._create_resource(resource_type, name, files, description, author, tags, metadata)
+        return self._create_resource(
+            resource_type, name, files, description, author, tags, metadata
+        )
 
     def download_resource(
         self,

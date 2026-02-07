@@ -1,4 +1,5 @@
 """Install command for CLI."""
+
 import click
 import httpx
 import zipfile
@@ -9,7 +10,9 @@ from ..utils import get_api_client, parse_resource_uri
 
 @click.command()
 @click.argument("resource_uri")
-@click.option("--format", "-f", type=click.Choice(["zip", "python"]), default="zip", help="Download format")
+@click.option(
+    "--format", "-f", type=click.Choice(["zip", "python"]), default="zip", help="Download format"
+)
 @click.option("--output", "-o", type=click.Path(), default=".", help="Output directory")
 @click.option("--dev", is_flag=True, help="Install in development mode")
 def install(resource_uri: str, format: str, output: str, dev: bool):
@@ -46,7 +49,9 @@ def install(resource_uri: str, format: str, output: str, dev: bool):
                     resource_id = resource["id"]
                     click.echo(f"Found: {resource['name']} ({resource_type})")
                 else:
-                    click.echo(click.style(f"Resource '{resource_id}' not found.", fg="red"), err=True)
+                    click.echo(
+                        click.style(f"Resource '{resource_id}' not found.", fg="red"), err=True
+                    )
                     raise click.Abort()
             except httpx.HTTPError as e:
                 click.echo(click.style(f"Error searching: {e}", fg="red"), err=True)
@@ -55,14 +60,16 @@ def install(resource_uri: str, format: str, output: str, dev: bool):
     with get_api_client() as client:
         try:
             click.echo(f"Downloading {resource_type}...")
-            downloaded_path = client.download_resource(resource_type, resource_id, format=format, output_dir=output_dir)
+            downloaded_path = client.download_resource(
+                resource_type, resource_id, format=format, output_dir=output_dir
+            )
 
             click.echo(click.style(f"Downloaded to: {downloaded_path}", fg="green", bold=True))
 
             # Extract if zip
             if format == "zip" and downloaded_path.suffix == ".zip":
                 click.echo("Extracting...")
-                with zipfile.ZipFile(downloaded_path, 'r') as zip_ref:
+                with zipfile.ZipFile(downloaded_path, "r") as zip_ref:
                     zip_ref.extractall(output_dir)
                     extracted_files = zip_ref.namelist()
                 click.echo(click.style(f"Extracted {len(extracted_files)} files.", fg="green"))

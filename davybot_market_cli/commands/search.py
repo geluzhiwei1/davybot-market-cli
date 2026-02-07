@@ -1,4 +1,5 @@
 """Search command for CLI."""
+
 import click
 import httpx
 from ..utils import format_resource, get_api_client
@@ -18,9 +19,16 @@ from ..exceptions import (
 
 @click.command()
 @click.argument("query")
-@click.option("--type", "-t", type=click.Choice(["skill", "agent", "mcp", "knowledge"]), help="Filter by resource type")
+@click.option(
+    "--type",
+    "-t",
+    type=click.Choice(["skill", "agent", "mcp", "knowledge"]),
+    help="Filter by resource type",
+)
 @click.option("--limit", "-l", default=20, help="Maximum number of results")
-@click.option("--output", "-o", type=click.Choice(["table", "json"]), default="table", help="Output format")
+@click.option(
+    "--output", "-o", type=click.Choice(["table", "json"]), default="table", help="Output format"
+)
 def search(query: str, type: str, limit: int, output: str):
     """Search for resources in the market.
 
@@ -38,6 +46,7 @@ def search(query: str, type: str, limit: int, output: str):
 
             if output == "json":
                 import json
+
                 click.echo(json.dumps(result, indent=2))
             else:
                 results = result.get("results", [])
@@ -54,8 +63,12 @@ def search(query: str, type: str, limit: int, output: str):
                     click.echo(click.style(f"{i}. {resource['name']}", fg="cyan", bold=True))
                     click.echo(f"   Type: {resource['type']}")
                     if resource.get("description"):
-                        click.echo(f"   Description: {resource['description'][:80]}{'...' if len(resource['description']) > 80 else ''}")
-                    click.echo(f"   Rating: {resource['rating']:.1f} | Downloads: {resource['downloads']}")
+                        click.echo(
+                            f"   Description: {resource['description'][:80]}{'...' if len(resource['description']) > 80 else ''}"
+                        )
+                    click.echo(
+                        f"   Rating: {resource['rating']:.1f} | Downloads: {resource['downloads']}"
+                    )
                     if resource.get("tags"):
                         click.echo(f"   Tags: {', '.join(resource['tags'][:5])}")
                     click.echo()

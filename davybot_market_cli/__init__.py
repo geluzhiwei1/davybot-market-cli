@@ -1,4 +1,5 @@
 """DavyBot Market - CLI and SDK for AI Agent Resources."""
+
 __version__ = "0.1.0"
 
 # SDK Client

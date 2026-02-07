@@ -1,4 +1,4 @@
 import pyotp 
-key = 'XIVQ45257OR6WE6HVI6GSXCOFJ342SWV' 
+key = 'GUMGLRVCM2DLYUQ5ZZ7L56ZNNQCELHZ3' 
 totp = pyotp.TOTP(key) 
 print(totp.now())
