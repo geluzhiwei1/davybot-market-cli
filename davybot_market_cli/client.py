@@ -68,7 +68,7 @@ class DavybotMarketClient:
         self._client: httpx.Client | None = None
         self._async_client: httpx.AsyncClient | None = None
 
-    def __enter__(self):
+    def __enter__(self) -> "DavybotMarketClient":
         """Enter context manager."""
         self._client = httpx.Client(
             base_url=self.base_url,
@@ -78,12 +78,12 @@ class DavybotMarketClient:
         )
         return self
 
-    def __exit__(self, *args):
+    def __exit__(self, *args: object) -> None:
         """Exit context manager."""
         if self._client:
             self._client.close()
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "DavybotMarketClient":
         """Enter async context manager."""
         self._async_client = httpx.AsyncClient(
             base_url=self.base_url,
@@ -93,7 +93,7 @@ class DavybotMarketClient:
         )
         return self
 
-    async def __aexit__(self, *args):
+    async def __aexit__(self, *args: object) -> None:
         """Exit async context manager."""
         if self._async_client:
             await self._async_client.aclose()
@@ -123,6 +123,35 @@ class DavybotMarketClient:
             headers["Authorization"] = f"Bearer {self.api_key}"
         return headers
 
+    def _parse_json_response(self, response: httpx.Response) -> dict[str, Any]:
+        """Parse JSON response and ensure it's a dict.
+
+        Args:
+            response: HTTP response
+
+        Returns:
+            Parsed JSON dict
+        """
+        json_data: Any = response.json()
+        assert isinstance(json_data, dict), "API response must be a dict"
+        return json_data
+
+    def _parse_json_list_response(self, response: httpx.Response) -> list[dict[str, Any]]:
+        """Parse JSON response and ensure it's a list.
+
+        Args:
+            response: HTTP response
+
+        Returns:
+            Parsed JSON list
+        """
+        json_data: Any = response.json()
+        assert isinstance(json_data, list), "API response must be a list"
+        # Ensure each item is a dict
+        for item in json_data:
+            assert isinstance(item, dict), "API response items must be dicts"
+        return json_data  # type: ignore[return-value]
+
     # Health check
     def health(self) -> dict[str, Any]:
         """Check API health.
@@ -134,7 +163,7 @@ class DavybotMarketClient:
         url = self.base_url.replace("/api/v1", "") + "/health"
         response = client.get(url)
         response.raise_for_status()
-        return response.json()
+        return self._parse_json_response(response)
 
     # Search
     def search(
@@ -166,7 +195,7 @@ class DavybotMarketClient:
 
         response = client.post("/search", json=payload)
         self._handle_error(response)
-        return response.json()
+        return self._parse_json_response(response)
 
     # List resources
     def list_skills(self, skip: int = 0, limit: int = 100) -> dict[str, Any]:
@@ -222,7 +251,7 @@ class DavybotMarketClient:
         client = self._get_client()
         response = client.get(f"/{resource_type}s", params={"skip": skip, "limit": limit})
         self._handle_error(response)
-        return response.json()
+        return self._parse_json_response(response)
 
     def _get_resource(self, resource_type: str, resource_id: str) -> dict[str, Any]:
         """Internal method to get resource by type."""
@@ -230,7 +259,7 @@ class DavybotMarketClient:
         encoded_id = self._encode_resource_id(resource_id)
         response = client.get(f"/{resource_type}s/{encoded_id}")
         self._handle_error(response)
-        return response.json()
+        return self._parse_json_response(response)
 
     # Get resource details
     def get_skill(self, resource_id: str) -> dict[str, Any]:
@@ -398,7 +427,7 @@ class DavybotMarketClient:
 
         response = client.post(f"/{resource_type}s", json=payload)
         self._handle_error(response)
-        return response.json()
+        return self._parse_json_response(response)
 
     # Download
     def download(
@@ -467,14 +496,14 @@ class DavybotMarketClient:
             Created rating
         """
         client = self._get_client()
-        payload = {"score": score}
+        payload: dict[str, Any] = {"score": score}
         if comment:
             payload["comment"] = comment
 
         encoded_id = self._encode_resource_id(resource_id)
         response = client.post(f"/resources/{encoded_id}/ratings", json=payload)
         self._handle_error(response)
-        return response.json()
+        return self._parse_json_response(response)
 
     def get_resource_ratings(
         self, resource_id: str, skip: int = 0, limit: int = 50
@@ -495,7 +524,7 @@ class DavybotMarketClient:
             f"/resources/{encoded_id}/ratings", params={"skip": skip, "limit": limit}
         )
         self._handle_error(response)
-        return response.json()
+        return self._parse_json_list_response(response)
 
     def get_average_rating(self, resource_id: str) -> dict[str, Any]:
         """Get average rating for a resource.
@@ -510,7 +539,7 @@ class DavybotMarketClient:
         encoded_id = self._encode_resource_id(resource_id)
         response = client.get(f"/resources/{encoded_id}/ratings/avg")
         self._handle_error(response)
-        return response.json()
+        return self._parse_json_response(response)
 
     # Similar resources
     def find_similar(self, resource_id: str, limit: int = 10) -> dict[str, Any]:
@@ -527,7 +556,7 @@ class DavybotMarketClient:
         encoded_id = self._encode_resource_id(resource_id)
         response = client.get(f"/search/similar/{encoded_id}", params={"limit": limit})
         self._handle_error(response)
-        return response.json()
+        return self._parse_json_response(response)
 
     # Update and delete
     def update_resource(
@@ -553,7 +582,7 @@ class DavybotMarketClient:
             Updated resource
         """
         client = self._get_client()
-        payload = {}
+        payload: dict[str, Any] = {}
         if name:
             payload["name"] = name
         if description:
@@ -566,7 +595,7 @@ class DavybotMarketClient:
         encoded_id = self._encode_resource_id(resource_id)
         response = client.put(f"/{resource_type}s/{encoded_id}", json=payload)
         self._handle_error(response)
-        return response.json()
+        return self._parse_json_response(response)
 
     def delete_resource(self, resource_type: str, resource_id: str) -> None:
         """Delete a resource.

@@ -12,7 +12,7 @@ from ..exceptions import NotFoundError, ValidationError, APIError, DavybotMarket
     "--output", "-o", type=click.Choice(["table", "json"]), default="table", help="Output format"
 )
 @click.option("--similar", "-s", is_flag=True, help="Show similar resources")
-def info(resource_uri: str, output: str, similar: bool):
+def info(resource_uri: str, output: str, similar: bool) -> None:
     """Show detailed information about a resource.
 
     RESOURCE_URI can be:

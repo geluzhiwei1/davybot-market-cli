@@ -20,11 +20,11 @@ def publish(
     resource_type: str,
     path: str,
     name: str,
-    description: str,
-    author: str,
-    tags: tuple,
-    metadata: str,
-):
+    description: str | None,
+    author: str | None,
+    tags: tuple[str, ...],
+    metadata: str | None,
+) -> None:
     """Publish a resource to the market.
 
     Examples:
@@ -77,20 +77,6 @@ def publish(
             raise click.Abort()
 
     # Build resource data
-    resource_data = {
-        "name": name,
-        "files": files,
-    }
-
-    if description:
-        resource_data["description"] = description
-    if author:
-        resource_data["author"] = author
-    if tags:
-        resource_data["tags"] = list(tags)
-    if extra_metadata:
-        resource_data["metadata"] = extra_metadata
-
     with get_api_client() as client:
         try:
             click.echo(f"Publishing {resource_type} '{name}'...")
@@ -98,7 +84,15 @@ def publish(
             if tags:
                 click.echo(f"  Tags: {', '.join(tags)}")
 
-            result = client.create_resource(resource_type, **resource_data)
+            result = client.create_resource(
+                resource_type=resource_type,
+                name=name,
+                files=files,
+                description=description,
+                author=author,
+                tags=list(tags) if tags else None,
+                metadata=extra_metadata if extra_metadata else None,
+            )
 
             click.echo(click.style("Successfully published!", fg="green", bold=True))
             click.echo(f"ID: {result.get('id')}")

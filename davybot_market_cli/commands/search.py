@@ -28,7 +28,7 @@ from ..exceptions import (
 @click.option(
     "--output", "-o", type=click.Choice(["table", "json"]), default="table", help="Output format"
 )
-def search(query: str, type: str, limit: int, output: str):
+def search(query: str, type: str, limit: int, output: str) -> None:
     """Search for resources in the market.
 
     Examples:

@@ -14,7 +14,7 @@ from ..utils import get_api_client, parse_resource_uri
 )
 @click.option("--output", "-o", type=click.Path(), default=".", help="Output directory")
 @click.option("--dev", is_flag=True, help="Install in development mode")
-def install(resource_uri: str, format: str, output: str, dev: bool):
+def install(resource_uri: str, format: str, output: str, dev: bool) -> None:
     """Install a resource from the market.
 
     RESOURCE_URI can be:

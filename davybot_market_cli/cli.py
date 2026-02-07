@@ -18,7 +18,7 @@ from .exit_codes import (
     "--api-url", envvar="DAVYBOT_API_URL", help="API URL (default: http://localhost:8000/api/v1)"
 )
 @click.version_option(version="0.1.0", prog_name="davy")
-def cli(ctx: click.Context, api_url: str):
+def cli(ctx: click.Context, api_url: str) -> None:
     """DavyBot Market - AI Agent Resources CLI.
 
     \b
@@ -51,7 +51,7 @@ def cli(ctx: click.Context, api_url: str):
 
 
 @cli.command()
-def health():
+def health() -> None:
     """Check API health status."""
     import os
 
@@ -90,7 +90,7 @@ cli.add_command(publish.publish)
 cli.add_command(info.info)
 
 
-def main():
+def main() -> None:
     """Main entry point with proper exit codes."""
     try:
         cli(standalone_mode=False)
