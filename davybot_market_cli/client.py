@@ -7,7 +7,6 @@ from typing import Any
 from pathlib import Path
 
 from .exceptions import (
-    DavybotMarketError,
     AuthenticationError,
     NotFoundError,
     ValidationError,

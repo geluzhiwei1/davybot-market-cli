@@ -100,7 +100,7 @@ def publish(
 
             result = client.create_resource(resource_type, **resource_data)
 
-            click.echo(click.style(f"Successfully published!", fg="green", bold=True))
+            click.echo(click.style("Successfully published!", fg="green", bold=True))
             click.echo(f"ID: {result.get('id')}")
             click.echo(f"Version: {result.get('version')}")
 

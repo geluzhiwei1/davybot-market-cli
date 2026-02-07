@@ -2,9 +2,8 @@
 
 import click
 import httpx
-from ..utils import format_resource, get_api_client
+from ..utils import get_api_client
 from ..exit_codes import (
-    SUCCESS,
     ERROR_NETWORK,
     ERROR_API,
     ExitCodeError,
@@ -73,7 +72,7 @@ def search(query: str, type: str, limit: int, output: str):
                         click.echo(f"   Tags: {', '.join(resource['tags'][:5])}")
                     click.echo()
 
-        except NotFoundError as e:
+        except NotFoundError:
             click.echo(click.style("Error: Resource not found", fg="red"), err=True)
             raise ExitCodeError(ERROR_API, "Not found")
         except ValidationError as e:

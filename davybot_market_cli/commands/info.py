@@ -2,7 +2,7 @@
 
 import click
 import httpx
-from ..utils import get_api_client, format_resource, parse_resource_uri
+from ..utils import get_api_client, parse_resource_uri
 from ..exceptions import NotFoundError, ValidationError, APIError, DavybotMarketError
 
 
@@ -88,7 +88,7 @@ def info(resource_uri: str, output: str, similar: bool):
 
                 click.echo(click.style("Installation:", bold=True))
                 click.echo(f"  dawi install {resource_type}://{resource['name']}")
-                click.echo(f"  # or by ID:")
+                click.echo("  # or by ID:")
                 click.echo(f"  dawi install {resource_id}")
                 click.echo()
 
@@ -109,8 +109,8 @@ def info(resource_uri: str, output: str, similar: bool):
                     except httpx.HTTPError:
                         click.echo("  Could not fetch similar resources.")
 
-        except NotFoundError as e:
-            click.echo(click.style(f"Error: Resource not found", fg="red"), err=True)
+        except NotFoundError:
+            click.echo(click.style("Error: Resource not found", fg="red"), err=True)
             raise click.Abort()
         except ValidationError as e:
             click.echo(click.style(f"Error: Invalid request - {e}", fg="red"), err=True)

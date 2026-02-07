@@ -6,7 +6,6 @@ import httpx
 
 from .commands import search, install, publish, info
 from .exit_codes import (
-    SUCCESS,
     ERROR_API_UNHEALTHY,
     ERROR_NETWORK,
     ExitCodeError,

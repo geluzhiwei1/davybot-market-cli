@@ -3,7 +3,6 @@
 import click
 import httpx
 import zipfile
-import tarfile
 from pathlib import Path
 from ..utils import get_api_client, parse_resource_uri
 
